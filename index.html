@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="fr">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Snake Game – Web</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<meta name="description" content="Snake Game en JavaScript avec Canvas et Tailwind CSS" />
+	<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🐍</text></svg>">
+</head>
+<body class="min-h-screen bg-gray-900 text-gray-100">
+	<header class="py-6">
+		<div class="container mx-auto px-4 text-center">
+			<h1 class="text-3xl font-bold tracking-tight">Snake Game</h1>
+			<p class="text-gray-400 mt-2">Flèches ou WASD pour jouer. Cliquez sur Démarrer.</p>
+		</div>
+	</header>
+
+	<main class="container mx-auto px-4 pb-16">
+		<div class="flex flex-col items-center gap-6">
+			<!-- HUD -->
+			<div class="flex items-center gap-4">
+				<div class="px-4 py-2 rounded bg-gray-800 border border-gray-700">
+					<span class="text-sm text-gray-400">Score</span>
+					<span id="score" class="ml-2 text-xl font-semibold">0</span>
+				</div>
+				<button id="start-btn" class="px-4 py-2 rounded bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 transition">Démarrer</button>
+				<button id="sound-btn" class="px-4 py-2 rounded bg-gray-800 border border-gray-700 hover:bg-gray-700 transition" aria-pressed="true">Son: Activé</button>
+			</div>
+
+			<!-- Canvas Wrapper -->
+			<div class="relative">
+				<canvas id="game" width="600" height="480" class="block rounded-lg border border-gray-700 bg-black shadow-xl"></canvas>
+				<!-- Overlay Game Over -->
+				<div id="overlay" class="hidden absolute inset-0 flex items-center justify-center bg-black/70 rounded-lg">
+					<div class="text-center p-6">
+						<h2 class="text-3xl font-bold text-red-400">GAME OVER</h2>
+						<p class="mt-2 text-gray-300">Appuyez sur Démarrer pour rejouer</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<!-- Audios (réutilise les fichiers existants du projet) -->
+	<audio id="eat-audio" src="./eating-chips-81092.mp3" preload="auto"></audio>
+	<audio id="over-audio" src="./game-over-kid-voice-clip-352738.mp3" preload="auto"></audio>
+
+	<script src="./script.js"></script>
+</body>
+</html>
+
+

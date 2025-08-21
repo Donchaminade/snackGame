@@ -38,6 +38,17 @@ python snake_game.py
 python main.py
 ```
 
+### Version Web (HTML + Tailwind)
+- Fichier d’entrée: `index.html`
+- Logique du jeu: `script.js`
+- Tailwind via CDN, aucun build nécessaire.
+
+Ouvrez simplement `index.html` dans un navigateur. Pour un serveur local simple:
+```bash
+python -m http.server 5500
+# puis ouvrez http://localhost:5500
+```
+
 ### Commandes
 - **Haut**: flèche haut ou `W`
 - **Bas**: flèche bas ou `S`
@@ -76,6 +87,10 @@ Vous pouvez ajuster les constantes en haut de `snake_game.py`:
 - **Erreur audio / pas de carte son**: Pygame peut afficher un avertissement; le jeu reste jouable. Si besoin, commentez `pygame.mixer.init()` dans `main()` pour désactiver le mixer.
 - **Police non trouvée**: si `consolas` n’est pas disponible, remplacez par la police par défaut Pygame: `pygame.font.Font(None, 20)`.
 
+Pour la version web:
+- **Sons ne jouent pas**: la lecture audio peut être bloquée avant une interaction utilisateur; cliquez sur « Démarrer ».
+- **Chemins des fichiers**: assurez-vous que `eating-chips-81092.mp3` et `game-over-kid-voice-clip-352738.mp3` sont à la racine du projet (même dossier que `index.html`).
+
 ### Développement
 Le cœur du jeu est la classe `SnakeGame` dans `snake_game.py`:
 - `reset_game()`: état initial
@@ -89,5 +104,21 @@ Contributions bienvenues: refactorisation, niveaux de difficulté, skins, sonori
 - Pygame: voir le site officiel [Pygame](https://www.pygame.org/)
 - Sons: assurez-vous de disposer des droits/licences nécessaires pour les fichiers audio utilisés.
 - Licence du projet: ajoutez un fichier `LICENSE` si vous souhaitez définir une licence (ex: MIT).
+
+### Hébergement sur Vercel
+Ce projet est un site statique. Déployez-le sur Vercel en pointant la racine du repo.
+
+Paramètres recommandés:
+- **Framework Preset**: Other
+- **Build Command**: (vide)
+- **Output Directory**: `.`
+
+Assurez-vous que les fichiers suivants existent à la racine:
+- `index.html`
+- `script.js`
+- `eating-chips-81092.mp3`
+- `game-over-kid-voice-clip-352738.mp3`
+
+Après déploiement, l’URL Vercel servira directement `index.html`.
 
 

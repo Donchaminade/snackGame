@@ -1,0 +1,204 @@
+/**
+ * Snake Game – Version Web (Canvas + Tailwind)
+ */
+
+const GRID_SIZE = 20;
+const SCREEN_WIDTH = 600;
+const SCREEN_HEIGHT = 480;
+const GRID_WIDTH = SCREEN_WIDTH / GRID_SIZE;
+const GRID_HEIGHT = SCREEN_HEIGHT / GRID_SIZE;
+const FPS = 10; // ticks per second
+
+/** @type {HTMLCanvasElement} */
+const canvas = document.getElementById('game');
+/** @type {CanvasRenderingContext2D} */
+const ctx = canvas.getContext('2d');
+
+const startBtn = document.getElementById('start-btn');
+const scoreEl = document.getElementById('score');
+const overlay = document.getElementById('overlay');
+const soundBtn = document.getElementById('sound-btn');
+
+const eatAudio = document.getElementById('eat-audio');
+const overAudio = document.getElementById('over-audio');
+
+let gameLoopId = null;
+let lastTickMs = 0;
+
+const COLORS = {
+	black: '#000000',
+	white: '#ffffff',
+	green: '#00ff00',
+	darkGreen: '#009b00',
+	red: '#ff0000',
+};
+
+/** Game State */
+let snake = [];
+let direction = { x: 1, y: 0 };
+let food = { x: 0, y: 0 };
+let score = 0;
+let gameOver = false;
+let soundEnabled = true;
+
+function resetGame() {
+	snake = [{ x: Math.floor(GRID_WIDTH / 2), y: Math.floor(GRID_HEIGHT / 2) }];
+	direction = { x: 1, y: 0 };
+	food = generateFood();
+	score = 0;
+	gameOver = false;
+	scoreEl.textContent = '0';
+	updateOverlay();
+}
+
+function generateFood() {
+	while (true) {
+		const pos = {
+			x: Math.floor(Math.random() * GRID_WIDTH),
+			y: Math.floor(Math.random() * GRID_HEIGHT),
+		};
+		if (!snake.some((s) => s.x === pos.x && s.y === pos.y)) return pos;
+	}
+}
+
+function changeDirection(newDx, newDy) {
+	// Empêche les demi-tours
+	if (direction.x === -newDx && direction.y === -newDy) return;
+	direction = { x: newDx, y: newDy };
+}
+
+function handleKey(e) {
+	if (gameOver) return;
+	switch (e.key) {
+		case 'ArrowUp':
+		case 'w':
+		case 'W':
+			changeDirection(0, -1);
+			break;
+		case 'ArrowDown':
+		case 's':
+		case 'S':
+			changeDirection(0, 1);
+			break;
+		case 'ArrowLeft':
+		case 'a':
+		case 'A':
+			changeDirection(-1, 0);
+			break;
+		case 'ArrowRight':
+		case 'd':
+		case 'D':
+			changeDirection(1, 0);
+			break;
+	}
+}
+
+function tick() {
+	if (gameOver) return;
+
+	// Nouveau head
+	const head = { ...snake[0] };
+	head.x += direction.x;
+	head.y += direction.y;
+
+	// Collisions murs
+	if (head.x < 0 || head.x >= GRID_WIDTH || head.y < 0 || head.y >= GRID_HEIGHT) {
+		setGameOver();
+		return;
+	}
+
+	// Collisions corps
+	if (snake.some((s) => s.x === head.x && s.y === head.y)) {
+		setGameOver();
+		return;
+	}
+
+	// Ajout tête
+	snake.unshift(head);
+
+	// Manger
+	if (head.x === food.x && head.y === food.y) {
+		score += 10;
+		scoreEl.textContent = String(score);
+		food = generateFood();
+		if (soundEnabled) try { eatAudio.currentTime = 0; eatAudio.play(); } catch {}
+	} else {
+		// Avancer: retirer la queue
+		snake.pop();
+	}
+}
+
+function setGameOver() {
+	gameOver = true;
+	updateOverlay();
+	if (soundEnabled) try { overAudio.currentTime = 0; overAudio.play(); } catch {}
+}
+
+function updateOverlay() {
+	overlay.classList.toggle('hidden', !gameOver);
+}
+
+function draw() {
+	// Fond
+	ctx.fillStyle = COLORS.black;
+	ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+	// Serpent
+	if (snake.length) {
+		// Tête
+		ctx.fillStyle = COLORS.darkGreen;
+		ctx.fillRect(snake[0].x * GRID_SIZE, snake[0].y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+		// Corps
+		ctx.fillStyle = COLORS.green;
+		for (let i = 1; i < snake.length; i++) {
+			const s = snake[i];
+			ctx.fillRect(s.x * GRID_SIZE, s.y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+		}
+	}
+
+	// Nourriture
+	ctx.fillStyle = COLORS.red;
+	ctx.fillRect(food.x * GRID_SIZE, food.y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+}
+
+function gameLoop(ts) {
+	if (!lastTickMs) lastTickMs = ts;
+	const delta = ts - lastTickMs;
+	const tickInterval = 1000 / FPS;
+	if (delta >= tickInterval) {
+		lastTickMs = ts;
+		tick();
+	}
+	draw();
+	gameLoopId = requestAnimationFrame(gameLoop);
+}
+
+function start() {
+	resetGame();
+	if (gameLoopId) cancelAnimationFrame(gameLoopId);
+	lastTickMs = 0;
+	gameLoopId = requestAnimationFrame(gameLoop);
+}
+
+// UI bindings
+startBtn.addEventListener('click', () => {
+	if (gameOver) {
+		start();
+	} else if (!gameLoopId) {
+		start();
+	}
+});
+
+soundBtn.addEventListener('click', () => {
+	soundEnabled = !soundEnabled;
+	soundBtn.setAttribute('aria-pressed', String(soundEnabled));
+	soundBtn.textContent = `Son: ${soundEnabled ? 'Activé' : 'Coupé'}`;
+});
+
+window.addEventListener('keydown', handleKey);
+
+// Démarrage initial: afficher le plateau sans bouger
+resetGame();
+draw();
+
+
