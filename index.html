@@ -30,7 +30,7 @@
 
 			<!-- Canvas Wrapper -->
 			<div class="relative">
-				<canvas id="game" width="600" height="480" class="block rounded-lg border border-gray-700 bg-black shadow-xl"></canvas>
+				<canvas id="game" width="600" height="480" class="block rounded-lg border border-gray-700 bg-black shadow-xl touch-none select-none"></canvas>
 				<!-- Overlay Game Over -->
 				<div id="overlay" class="hidden absolute inset-0 flex items-center justify-center bg-black/70 rounded-lg">
 					<div class="text-center p-6">
@@ -38,6 +38,19 @@
 						<p class="mt-2 text-gray-300">Appuyez sur Démarrer pour rejouer</p>
 					</div>
 				</div>
+			</div>
+
+			<!-- D‑pad tactile (mobile) -->
+			<div class="mt-6 grid grid-cols-3 grid-rows-3 gap-2 select-none">
+				<div></div>
+				<button id="dpad-up" class="w-16 h-16 rounded-lg bg-gray-800 border border-gray-700 hover:bg-gray-700 active:bg-gray-600 flex items-center justify-center text-xl" aria-label="Haut">▲</button>
+				<div></div>
+				<button id="dpad-left" class="w-16 h-16 rounded-lg bg-gray-800 border border-gray-700 hover:bg-gray-700 active:bg-gray-600 flex items-center justify-center text-xl" aria-label="Gauche">◀</button>
+				<div></div>
+				<button id="dpad-right" class="w-16 h-16 rounded-lg bg-gray-800 border border-gray-700 hover:bg-gray-700 active:bg-gray-600 flex items-center justify-center text-xl" aria-label="Droite">▶</button>
+				<div></div>
+				<button id="dpad-down" class="w-16 h-16 rounded-lg bg-gray-800 border border-gray-700 hover:bg-gray-700 active:bg-gray-600 flex items-center justify-center text-xl" aria-label="Bas">▼</button>
+				<div></div>
 			</div>
 		</div>
 	</main>

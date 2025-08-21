@@ -21,6 +21,10 @@ const soundBtn = document.getElementById('sound-btn');
 
 const eatAudio = document.getElementById('eat-audio');
 const overAudio = document.getElementById('over-audio');
+const dpadUpBtn = document.getElementById('dpad-up');
+const dpadDownBtn = document.getElementById('dpad-down');
+const dpadLeftBtn = document.getElementById('dpad-left');
+const dpadRightBtn = document.getElementById('dpad-right');
 
 let gameLoopId = null;
 let lastTickMs = 0;
@@ -40,6 +44,9 @@ let food = { x: 0, y: 0 };
 let score = 0;
 let gameOver = false;
 let soundEnabled = true;
+let touchStartX = null;
+let touchStartY = null;
+const SWIPE_THRESHOLD_PX = 30;
 
 function resetGame() {
 	snake = [{ x: Math.floor(GRID_WIDTH / 2), y: Math.floor(GRID_HEIGHT / 2) }];
@@ -91,6 +98,59 @@ function handleKey(e) {
 			changeDirection(1, 0);
 			break;
 	}
+}
+
+function bindDpad() {
+	if (dpadUpBtn) {
+		const up = (ev) => { ev.preventDefault(); changeDirection(0, -1); };
+		dpadUpBtn.addEventListener('click', up);
+		dpadUpBtn.addEventListener('touchstart', up, { passive: false });
+	}
+	if (dpadDownBtn) {
+		const down = (ev) => { ev.preventDefault(); changeDirection(0, 1); };
+		dpadDownBtn.addEventListener('click', down);
+		dpadDownBtn.addEventListener('touchstart', down, { passive: false });
+	}
+	if (dpadLeftBtn) {
+		const left = (ev) => { ev.preventDefault(); changeDirection(-1, 0); };
+		dpadLeftBtn.addEventListener('click', left);
+		dpadLeftBtn.addEventListener('touchstart', left, { passive: false });
+	}
+	if (dpadRightBtn) {
+		const right = (ev) => { ev.preventDefault(); changeDirection(1, 0); };
+		dpadRightBtn.addEventListener('click', right);
+		dpadRightBtn.addEventListener('touchstart', right, { passive: false });
+	}
+}
+
+function bindSwipe() {
+	canvas.addEventListener('touchstart', (e) => {
+		if (!e.touches || !e.touches[0]) return;
+		touchStartX = e.touches[0].clientX;
+		touchStartY = e.touches[0].clientY;
+	}, { passive: true });
+
+	canvas.addEventListener('touchmove', (e) => {
+		// Empêche le scroll pendant le jeu
+		e.preventDefault();
+	}, { passive: false });
+
+	canvas.addEventListener('touchend', (e) => {
+		if (touchStartX == null || touchStartY == null) return;
+		const touch = e.changedTouches && e.changedTouches[0];
+		if (!touch) return;
+		const dx = touch.clientX - touchStartX;
+		const dy = touch.clientY - touchStartY;
+		touchStartX = touchStartY = null;
+		if (Math.abs(dx) < SWIPE_THRESHOLD_PX && Math.abs(dy) < SWIPE_THRESHOLD_PX) return;
+		if (Math.abs(dx) > Math.abs(dy)) {
+			// Horizontal
+			changeDirection(dx > 0 ? 1 : -1, 0);
+		} else {
+			// Vertical
+			changeDirection(0, dy > 0 ? 1 : -1);
+		}
+	}, { passive: false });
 }
 
 function tick() {
@@ -196,6 +256,8 @@ soundBtn.addEventListener('click', () => {
 });
 
 window.addEventListener('keydown', handleKey);
+bindDpad();
+bindSwipe();
 
 // Démarrage initial: afficher le plateau sans bouger
 resetGame();

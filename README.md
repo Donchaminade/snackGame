@@ -49,6 +49,11 @@ python -m http.server 5500
 # puis ouvrez http://localhost:5500
 ```
 
+#### Contrôles mobile (D‑pad + swipe)
+- Des boutons directionnels tactiles (▲ ◀ ▶ ▼) sont intégrés sous le canvas.
+- Les gestes de **swipe** sur le canvas changent aussi la direction (seuil ≈ 30px).
+- Le jeu conserve la règle: pas de demi‑tour immédiat.
+
 ### Commandes
 - **Haut**: flèche haut ou `W`
 - **Bas**: flèche bas ou `S`
