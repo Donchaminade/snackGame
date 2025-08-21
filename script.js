@@ -2,11 +2,10 @@
  * Snake Game – Version Web (Canvas + Tailwind)
  */
 
-const GRID_SIZE = 20;
-const SCREEN_WIDTH = 600;
-const SCREEN_HEIGHT = 480;
-const GRID_WIDTH = SCREEN_WIDTH / GRID_SIZE;
-const GRID_HEIGHT = SCREEN_HEIGHT / GRID_SIZE;
+// Grille logique fixe (ne dépend pas de la taille d'écran)
+const GRID_WIDTH = 30;  // colonnes
+const GRID_HEIGHT = 24; // lignes
+let CELL_PX = 20;       // taille d'une cellule en pixels (responsive)
 const FPS = 10; // ticks per second
 
 /** @type {HTMLCanvasElement} */
@@ -47,6 +46,17 @@ let soundEnabled = true;
 let touchStartX = null;
 let touchStartY = null;
 const SWIPE_THRESHOLD_PX = 30;
+
+function resizeCanvasToContainer() {
+	// Calcule une taille de cellule adaptée à la largeur disponible
+	const container = canvas.parentElement; // wrapper relatif
+	const availableWidth = Math.max(200, Math.min(window.innerWidth - 32, container.clientWidth || window.innerWidth));
+	const desiredCell = Math.floor(availableWidth / GRID_WIDTH);
+	const clampedCell = Math.max(12, Math.min(28, desiredCell));
+	CELL_PX = clampedCell;
+	canvas.width = GRID_WIDTH * CELL_PX;
+	canvas.height = GRID_HEIGHT * CELL_PX;
+}
 
 function resetGame() {
 	snake = [{ x: Math.floor(GRID_WIDTH / 2), y: Math.floor(GRID_HEIGHT / 2) }];
@@ -201,24 +211,24 @@ function updateOverlay() {
 function draw() {
 	// Fond
 	ctx.fillStyle = COLORS.black;
-	ctx.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 	// Serpent
 	if (snake.length) {
 		// Tête
 		ctx.fillStyle = COLORS.darkGreen;
-		ctx.fillRect(snake[0].x * GRID_SIZE, snake[0].y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+		ctx.fillRect(snake[0].x * CELL_PX, snake[0].y * CELL_PX, CELL_PX, CELL_PX);
 		// Corps
 		ctx.fillStyle = COLORS.green;
 		for (let i = 1; i < snake.length; i++) {
 			const s = snake[i];
-			ctx.fillRect(s.x * GRID_SIZE, s.y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+			ctx.fillRect(s.x * CELL_PX, s.y * CELL_PX, CELL_PX, CELL_PX);
 		}
 	}
 
 	// Nourriture
 	ctx.fillStyle = COLORS.red;
-	ctx.fillRect(food.x * GRID_SIZE, food.y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+	ctx.fillRect(food.x * CELL_PX, food.y * CELL_PX, CELL_PX, CELL_PX);
 }
 
 function gameLoop(ts) {
@@ -260,7 +270,19 @@ bindDpad();
 bindSwipe();
 
 // Démarrage initial: afficher le plateau sans bouger
+resizeCanvasToContainer();
 resetGame();
 draw();
+
+// Responsive: recalcule la taille du canvas au redimensionnement
+window.addEventListener('resize', () => {
+	const prevWidth = canvas.width;
+	const prevHeight = canvas.height;
+	resizeCanvasToContainer();
+	// Pas besoin d'ajuster la logique: on redessine simplement au nouveau scale
+	if (prevWidth !== canvas.width || prevHeight !== canvas.height) {
+		draw();
+	}
+});
 
 

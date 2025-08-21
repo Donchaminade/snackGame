@@ -54,6 +54,11 @@ python -m http.server 5500
 - Les gestes de **swipe** sur le canvas changent aussi la direction (seuil ≈ 30px).
 - Le jeu conserve la règle: pas de demi‑tour immédiat.
 
+### Responsivité
+- Le canvas s’adapte à la largeur de l’écran; la taille des cellules est recalculée dynamiquement.
+- Le HUD (score, boutons) s’empile et se compacte sur mobile.
+- Le D‑pad réduit sa taille sur petits écrans et s’agrandit sur desktop.
+
 ### Commandes
 - **Haut**: flèche haut ou `W`
 - **Bas**: flèche bas ou `S`
